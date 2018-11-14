@@ -37,27 +37,37 @@ if ($e->name == 'OnDocFormRender') {
         $darktheme = $prop['darktheme'];
         $output .= <<<OUT
         
-        <link rel="stylesheet" href="{$path}assets/plugins/codemirror/cm/lib/codemirror.css">
-        <link rel="stylesheet" href="{$path}assets/plugins/codemirror/cm/addon.css">
-        <link rel="stylesheet" href="{$path}assets/plugins/codemirror/cm/theme/{$theme}.css">
-        <link rel="stylesheet" href="{$path}assets/plugins/codemirror/cm/theme/{$darktheme}.css">
-        <style>.CodeMirror { font-size:{$fontSize}px !important; line-height:{$lineHeight} !important; } .CodeMirror pre { font-size:{$fontSize}px !important; line-height:{$lineHeight} !important; }</style>
-        <script src="{$path}assets/plugins/codemirror/cm/lib/codemirror-compressed.js"></script>
-        <script src="{$path}assets/plugins/codemirror/cm/mode/xml-compressed.js"></script>
-        <script src="{$path}assets/plugins/codemirror/cm/mode/javascript-compressed.js"></script>
-        <script src="{$path}assets/plugins/codemirror/cm/mode/css-compressed.js"></script>
-        <script src="{$path}assets/plugins/codemirror/cm/mode/clike-compressed.js"></script>
-        <script src="{$path}assets/plugins/codemirror/cm/mode/php-compressed.js"></script>
-        <script src="{$path}assets/plugins/codemirror/cm/mode/sql-compressed.js"></script>
-        <script src="{$path}assets/plugins/codemirror/cm/mode/htmlmixed-compressed.js"></script>
-        <script src="{$path}assets/plugins/codemirror/cm/emmet-compressed.js"></script>
-        <script src="{$path}assets/plugins/codemirror/cm/addon-compressed.js"></script>
+        <script>
+            var CodeMirrorLoaded = true;
+            if (typeof CodeMirror == "undefined") {
+                CodeMirrorLoaded = false;
+                var cdmtv_scripts = '' +  
+                '<link rel="stylesheet" href="{$path}assets/plugins/codemirror/cm/lib/codemirror.css">' +  
+                '<link rel="stylesheet" href="{$path}assets/plugins/codemirror/cm/addon.css">' +  
+                '<link rel="stylesheet" href="{$path}assets/plugins/codemirror/cm/theme/{$theme}.css">' +  
+                '<link rel="stylesheet" href="{$path}assets/plugins/codemirror/cm/theme/{$darktheme}.css">' +  
+                '<style>.CodeMirror { font-size:{$fontSize}px !important; line-height:{$lineHeight} !important; } .CodeMirror pre { font-size:{$fontSize}px !important; line-height:{$lineHeight} !important; }</style>' +  
+                '<script src="{$path}assets/plugins/codemirror/cm/lib/codemirror-compressed.js"><\/script>' +  
+                '<script src="{$path}assets/plugins/codemirror/cm/mode/xml-compressed.js"><\/script>' +  
+                '<script src="{$path}assets/plugins/codemirror/cm/mode/javascript-compressed.js"><\/script>' +  
+                '<script src="{$path}assets/plugins/codemirror/cm/mode/css-compressed.js"><\/script>' +  
+                '<script src="{$path}assets/plugins/codemirror/cm/mode/clike-compressed.js"><\/script>' +  
+                '<script src="{$path}assets/plugins/codemirror/cm/mode/php-compressed.js"><\/script>' +  
+                '<script src="{$path}assets/plugins/codemirror/cm/mode/sql-compressed.js"><\/script>' +  
+                '<script src="{$path}assets/plugins/codemirror/cm/mode/htmlmixed-compressed.js"><\/script>' +  
+                '<script src="{$path}assets/plugins/codemirror/cm/emmet-compressed.js"><\/script>' +  
+                '<script src="{$path}assets/plugins/codemirror/cm/addon-compressed.js"><\/script>';
+                
+                document.write(cdmtv_scripts);
+            }
+        </script>
 
 
         <script type="text/javascript">
         (function(){
-        // Add mode MODX for syntax highlighting. Dfsed on htmlmixed
-        CodeMirror.defineMode("MODx-htmlmixed", function(config, parserConfig) {
+          if (CodeMirrorLoaded) {return;}
+          // Add mode MODX for syntax highlighting. Dfsed on htmlmixed
+          CodeMirror.defineMode("MODx-htmlmixed", function(config, parserConfig) {
             var mustacheOverlay = {
                 token: function(stream, state) {
                     var ch;
@@ -151,6 +161,8 @@ if ($e->name == 'OnDocFormRender') {
           marker.innerHTML = "*";
           return marker;
         }
+        })();
+
         //Basic settings
         var CodeMirrorTV_config = extend({
             mode: 'MODx-htmlmixed',
@@ -201,11 +213,10 @@ if ($e->name == 'OnDocFormRender') {
                 }
             }
         }, {$def_config});
-        })()
         </script>
 OUT;
         foreach ($exists_tvs as $tv) {
-            $output .= '<script>var myCodeMirror_tv' . $tv . ' = CodeMirror.fromTextArea(document.getElementById("tv' . $tv . '"), window.CodeMirrorTV_config);</script>';
+            $output .= '<script>var myCodeMirror_tv' . $tv . ' = CodeMirror.fromTextArea(document.getElementById("tv' . $tv . '"), CodeMirrorTV_config);</script>';
         }
     }
     $e->output($output);

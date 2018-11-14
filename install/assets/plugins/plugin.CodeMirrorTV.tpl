@@ -55,6 +55,7 @@ if ($e->name == 'OnDocFormRender') {
 
 
         <script type="text/javascript">
+        (function(){
         // Add mode MODX for syntax highlighting. Dfsed on htmlmixed
         CodeMirror.defineMode("MODx-htmlmixed", function(config, parserConfig) {
             var mustacheOverlay = {
@@ -151,7 +152,7 @@ if ($e->name == 'OnDocFormRender') {
           return marker;
         }
         //Basic settings
-        var config = extend({
+        var CodeMirrorTV_config = extend({
             mode: 'MODx-htmlmixed',
             defaulttheme: 'default',
             readOnly: false,
@@ -200,10 +201,11 @@ if ($e->name == 'OnDocFormRender') {
                 }
             }
         }, {$def_config});
+        })()
         </script>
 OUT;
         foreach ($exists_tvs as $tv) {
-            $output .= '<script>var myCodeMirror_tv' . $tv . ' = CodeMirror.fromTextArea(document.getElementById("tv' . $tv . '"), config);</script>';
+            $output .= '<script>var myCodeMirror_tv' . $tv . ' = CodeMirror.fromTextArea(document.getElementById("tv' . $tv . '"), window.CodeMirrorTV_config);</script>';
         }
     }
     $e->output($output);

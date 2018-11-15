@@ -216,7 +216,46 @@ if ($e->name == 'OnDocFormRender') {
         </script>
 OUT;
         foreach ($exists_tvs as $tv) {
-            $output .= '<script>var myCodeMirror_tv' . $tv . ' = CodeMirror.fromTextArea(document.getElementById("tv' . $tv . '"), CodeMirrorTV_config);</script>';
+            $output .= <<<OUT
+            <script>
+                var isMultiTV = document.getElementById("tv{$tv}list");
+                function initCodeMirrorsMTV(tvid, CodeMirror, cfg) {
+                    var CodeMirrorsMTV = {};
+                    setTimeout(function() {
+                        var trgts = document.getElementById("tv" + tvid + "list").querySelectorAll("li.element textarea");
+                        for (var ppp in trgts) {
+                            if (typeof trgts[ppp] == "undefined" || typeof trgts[ppp].id == "undefined" || trgts[ppp].id == "") continue;
+                            var cdm_name = 'myCodeMirror_multitv' + tvid + '_' + ppp;
+                            CodeMirrorsMTV[cdm_name] = CodeMirror.fromTextArea(document.getElementById(trgts[ppp].id), cfg);
+                        }
+                        for (var cdm in CodeMirrorsMTV) {
+                            CodeMirrorsMTV[cdm].on("change", function(){
+                                for (var cdm2 in CodeMirrorsMTV) {
+                                    CodeMirrorsMTV[cdm2].save();
+                                    var node = CodeMirrorsMTV[cdm2].getTextArea();
+                                    if (document.createEvent) {
+                                        var evt = document.createEvent('HTMLEvents');
+                                        evt.initEvent('change', true, false);
+                                        node.dispatchEvent(evt);    
+                                       } else if (document.createEventObject) {
+                                        node.fireEvent('onclick') ; 
+                                    } else if (typeof node.onclick == 'function') {
+                                        node.onclick(); 
+                                    }
+                                }
+                            })
+                        }
+                    }, 1000);
+                    return CodeMirrorsMTV;
+                }
+                if (isMultiTV) {
+                    var CodeMirrorTV_config_forMtv = extend(CodeMirrorTV_config, {});
+                    initCodeMirrorsMTV("{$tv}", CodeMirror, CodeMirrorTV_config_forMtv, {});
+                } else {
+                    var myCodeMirror_tv{$tv} = CodeMirror.fromTextArea(document.getElementById("tv{$tv}"), CodeMirrorTV_config);
+                }
+            </script>
+OUT;
         }
     }
     $e->output($output);

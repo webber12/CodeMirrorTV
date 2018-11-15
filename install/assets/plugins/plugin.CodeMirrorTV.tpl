@@ -250,7 +250,7 @@ OUT;
                 }
                 if (isMultiTV) {
                     var CodeMirrorTV_config_forMtv = extend(CodeMirrorTV_config, {});
-                    initCodeMirrorsMTV("{$tv}", CodeMirror, CodeMirrorTV_config_forMtv, {});
+                    initCodeMirrorsMTV("{$tv}", CodeMirror, CodeMirrorTV_config_forMtv);
                 } else {
                     var myCodeMirror_tv{$tv} = CodeMirror.fromTextArea(document.getElementById("tv{$tv}"), CodeMirrorTV_config);
                 }

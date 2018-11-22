@@ -17,6 +17,7 @@
 $e = &$modx->Event;
 if ($e->name == 'OnDocFormRender') {
     global $tvsArray;
+    if (!isset($tvsArray) || !is_array($tvsArray) || empty($tvsArray)) return;
     $output = '';
     $path = MODX_SITE_URL;
     $exists_tvs = array_intersect(array_map('trim', explode(',', $tvs)), array_column($tvsArray, 'id'));

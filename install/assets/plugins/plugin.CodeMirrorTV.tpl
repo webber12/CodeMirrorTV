@@ -16,11 +16,17 @@
  
 $e = &$modx->Event;
 if ($e->name == 'OnDocFormRender') {
-    global $tvsArray;
-    if (!isset($tvsArray) || !is_array($tvsArray) || empty($tvsArray)) return;
+    global $content;
+    if(empty($content) || empty($content['template'])) return;
+    $tvsArray = [];
+    $q = $modx->db->query("SELECT * FROM " . $modx->getFullTableName("site_tmplvar_templates") . " WHERE templateid=" . $content['template']);
+    while ($row = $modx->db->getRow($q)) {
+        $tvsArray[] = $row['tmplvarid'];
+    }
+    if (empty($tvsArray)) return;
     $output = '';
     $path = MODX_SITE_URL;
-    $exists_tvs = array_intersect(array_map('trim', explode(',', $tvs)), array_column($tvsArray, 'id'));
+    $exists_tvs = array_intersect(array_map('trim', explode(',', $tvs)), $tvsArray);
     if (!empty($exists_tvs)) {
         $q = $modx->db->getValue("SELECT properties FROM " . $modx->getFullTableName("site_plugins") . " WHERE `name`='CodeMirror' LIMIT 0,1");
         $prop = $modx->parseProperties($q);
